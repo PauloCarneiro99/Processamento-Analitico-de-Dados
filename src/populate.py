@@ -19,7 +19,22 @@ con = connect(
 
 cursor = con.cursor()
 
-# Obs: Table local is already populated by wikipedia crawler
+
+# POPULATING LOCAL TABLE
+
+logger.info("populating local table")
+
+insert_sql = """
+INSERT INTO SCHEMA_INDI_SOCIAIS.LOCAL (NOME_PAIS, SUB_REGIAO, CONTINENTE)
+VALUES (%(nome_pais)s, %(sub_regiao)s, %(continente)s)
+"""
+
+df = pd.read_csv("src/dataset/sub_regions_distribution.csv", error_bad_lines=False)[
+    ["Region Name", "Sub-region Name", "Country or Area"]
+]
+df.columns = ["continente", "sub_regiao", "nome_pais"]
+
+execute_batch(cursor, insert_sql, df.to_dict(orient="records"))
 
 # POPULATING SEXO TABLE
 
